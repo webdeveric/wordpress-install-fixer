@@ -2,6 +2,7 @@
   "name": "lplabs/wordpress-install-fixer",
   "description": "Various fixes for subfolder installs of WordPress",
   "type": "composer-plugin",
+  "license": "MIT",
   "authors": [
     {
       "name": "Eric King",
