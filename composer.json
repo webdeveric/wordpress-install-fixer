@@ -1,0 +1,54 @@
+{
+  "name": "lplabs/wordpress-install-fixer",
+  "description": "Various fixes for subfolder installs of WordPress",
+  "type": "composer-plugin",
+  "authors": [
+    {
+      "name": "Eric King",
+      "email": "eric.king@lonelyplanet.com",
+      "homepage": "http://webdeveric.com",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "LPLabs\\WordPressInstallFixer\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "LPLabs\\WordPressInstallFixer\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "class": "LPLabs\\WordPressInstallFixer\\Plugin"
+  },
+  "require": {
+    "php": ">=7.0",
+    "composer-plugin-api": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.0",
+    "composer/composer": "^1.0",
+    "squizlabs/php_codesniffer": "^2.8",
+    "phpmd/phpmd": "^2.4",
+    "mikey179/vfsStream": "^1.6"
+  },
+  "scripts": {
+    "cs": "phpcbf --standard=PSR2 --encoding=utf-8 ./src/ ./tests/",
+    "md": "phpmd 'src,tests' text phpmd.xml",
+    "test": "phpunit --colors=always --coverage-text",
+    "pre-commit": [
+      "@cs",
+      "@md",
+      "@test"
+    ],
+    "setup-hooks": [
+      "php -r \"copy('./hooks/pre-commit', '.git/hooks/pre-commit');\"",
+      "php -r \"chmod('.git/hooks/pre-commit', 0700);\""
+    ]
+  }
+}
