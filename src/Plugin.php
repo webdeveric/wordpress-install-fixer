@@ -132,6 +132,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function isWordPressCore(PackageEvent $event) : bool
     {
-        return $event->getOperation()->getPackage()->getType() === self::PACKAGE_TYPE;
+        $operation = $event->getOperation();
+        $package = method_exists($operation, 'getTargetPackage') ? $operation->getTargetPackage() : $operation->getPackage();
+
+        return $package->getType() === self::PACKAGE_TYPE;
     }
 }
