@@ -13,17 +13,16 @@ class PluginTest extends TestCase
     protected $composer;
     protected $io;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->composer = new Composer();
         $this->io = $this->createMock('Composer\IO\ConsoleIO');
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testExtraMissing()
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->composer->setPackage($this->createMock('Composer\Package\RootPackageInterface'));
 
         $plugin = new Plugin();
@@ -43,6 +42,6 @@ class PluginTest extends TestCase
         $plugin = new Plugin();
         $plugin->activate($this->composer, $this->io);
 
-        $this->assertInternalType('array', Plugin::getSubscribedEvents());
+        $this->assertIsArray(Plugin::getSubscribedEvents());
     }
 }

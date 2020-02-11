@@ -1,4 +1,4 @@
 /build/
 /vendor/
-composer.lock
 phpmd-report.xml
+.phpunit.result.cache
