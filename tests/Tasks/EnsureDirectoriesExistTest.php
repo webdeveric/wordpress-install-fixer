@@ -1,24 +1,40 @@
 <?php
 
-namespace LPLabs\WordPressInstallFixer\Tests\Tasks;
+namespace webdeveric\WordPressInstallFixer\Tests\Tasks;
 
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 use PHPUnit\Framework\TestCase;
-use LPLabs\WordPressInstallFixer\Tasks\EnsureDirectoriesExist;
+use webdeveric\WordPressInstallFixer\Tasks\EnsureDirectoriesExist;
 
 class EnsureDirectoriesExistTest extends TestCase
 {
     public function testRun()
     {
         $root = vfsStream::setup('public');
+
         $task = new EnsureDirectoriesExist($root->url());
 
-        $this->assertFalse($root->hasChild('wp-content'));
-        $this->assertTrue($task->run());
-        $this->assertTrue($root->hasChild('wp-content'));
+        $this->assertEquals(
+            [
+                'public' => [],
+            ],
+            vfsStream::inspect(new vfsStreamStructureVisitor())->getStructure()
+        );
 
-        foreach ([ 'themes', 'plugins', 'mu-plugins' ] as $folder) {
-            $this->assertTrue($root->getChild('wp-content')->hasChild($folder));
-        }
+        $this->assertTrue($task->run());
+
+        $this->assertEquals(
+            [
+                'public' => [
+                    'wp-content' => [
+                        'mu-plugins' => [],
+                        'plugins' => [],
+                        'themes' => [],
+                    ],
+                ],
+            ],
+            vfsStream::inspect(new vfsStreamStructureVisitor())->getStructure()
+        );
     }
 }
