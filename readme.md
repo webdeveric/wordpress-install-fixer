@@ -9,7 +9,7 @@ This Composer plugin is used to fix some things when installing WordPress in a s
 ## Requirements
 
 - Use [Composer](https://getcomposer.org/) to manage dependencies, including WP core.
-- PHP 7+
+- PHP 8+
 
 ## Local development
 
