@@ -2,95 +2,123 @@
 
 declare(strict_types=1);
 
-namespace LPLabs\WordPressInstallFixer;
+namespace webdeveric\WordPressInstallFixer;
 
 use RuntimeException;
 use Composer\Composer;
+use Composer\DependencyResolver\Operation\InstallOperation;
+use Composer\DependencyResolver\Operation\UninstallOperation;
+use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Installer\PackageEvent;
 use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
+use Composer\Script\Event as ScriptEvent;
 use Composer\Util\Filesystem;
-use LPLabs\WordPressInstallFixer\Tasks\EnsureDirectoriesExist;
-use LPLabs\WordPressInstallFixer\Tasks\FixIndexFile;
-use LPLabs\WordPressInstallFixer\Tasks\RemoveGarbage;
-use LPLabs\WordPressInstallFixer\Tasks\RemoveIndexFile;
+use webdeveric\WordPressInstallFixer\Tasks\EnsureDirectoriesExist;
+use webdeveric\WordPressInstallFixer\Tasks\FixIndexFile;
+use webdeveric\WordPressInstallFixer\Tasks\RemoveGarbage;
+use webdeveric\WordPressInstallFixer\Tasks\RemoveIndexFile;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
-    /**
-     * @var string
-     */
-    const PACKAGE_TYPE = 'wordpress-core';
+    const string PACKAGE_TYPE = 'wordpress-core';
 
-    /**
-     * @var Composer
-     */
-    protected $composer;
+    protected Composer $composer;
 
-    /**
-     * @var IOInterface
-     */
-    protected $io;
+    protected IOInterface $io;
 
     /**
      * Where WordPress is installed
-     *
-     * @var string
      */
-    protected $wpInstallDir;
+    protected string $wpInstallDir;
 
     /**
      * Subscribe to events
-     *
-     * @return array
      */
-    public static function getSubscribedEvents() : array
+    public static function getSubscribedEvents(): array
     {
         return [
-            PackageEvents::POST_PACKAGE_INSTALL  => [ 'handleEvent', 0 ],
-            PackageEvents::POST_PACKAGE_UPDATE   => [ 'handleEvent', 0 ],
-            PackageEvents::PRE_PACKAGE_UNINSTALL => [ 'handleEvent', 0 ],
+            PackageEvents::POST_PACKAGE_INSTALL  => ['handlePackageInstallOrUpdate', 0],
+            PackageEvents::POST_PACKAGE_UPDATE   => ['handlePackageInstallOrUpdate', 0],
+            PackageEvents::PRE_PACKAGE_UNINSTALL => ['handlePackageUninstall', 0],
         ];
+    }
+
+    public function handlePackageInstallOrUpdate(PackageEvent | ScriptEvent $event): void
+    {
+        if ($this->isWordPressCore($event)) {
+            $filesystem = new Filesystem();
+
+            (new FixIndexFile($this->wpInstallDir, $filesystem))->run();
+
+            $this->comment('index.php fixed');
+
+            (new RemoveGarbage($this->wpInstallDir, $filesystem))->run();
+
+            $this->comment('Unneeded files have been removed from the WordPress install directory');
+
+            (new EnsureDirectoriesExist($this->wpInstallDir . '/../', $filesystem))->run();
+
+            $this->comment('WordPress content directories exist');
+        }
+    }
+
+    public function handlePackageUninstall(/* PackageEvent | ScriptEvent $event */): void
+    {
+        (new RemoveIndexFile($this->wpInstallDir . '/../', new Filesystem()))->run();
+
+        $this->comment('index.php removed');
     }
 
     /**
      * Activate the plugin
-     * @param  Composer    $composer
-     * @param  IOInterface $io
      */
-    public function activate(Composer $composer, IOInterface $io)
+    public function activate(Composer $composer, IOInterface $io): void
     {
         $this->composer = $composer;
         $this->io = $io;
-        $this->wpInstallDir = $this->getExtra('wordpress-install-dir', false);
+        $this->wpInstallDir = $this->getExtra('wordpress-install-dir');
 
-        if (! $this->wpInstallDir) {
+        if (!is_string($this->wpInstallDir) || !strlen($this->wpInstallDir)) {
             throw new RuntimeException('wordpress-install-dir not set in composer.json');
         }
     }
 
     /**
-     * Get data from composer.json/extra
-     *
-     * @param  string $key
-     * @param  string $default
-     * @return mixed
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getExtra(string $key, $default = '')
+    public function deactivate(Composer $composer, IOInterface $io): void
+    {
+        // Do nothing
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function uninstall(Composer $composer, IOInterface $io): void
+    {
+        // Do nothing
+    }
+
+    /**
+     * Get data from composer.json/extra
+     */
+    protected function getExtra(string $key, $default = ''): mixed
     {
         $extra = $this->composer->getPackage()->getExtra();
 
-        return isset($extra[ $key ]) ? $extra[ $key ] : $default;
+        return isset($extra[$key]) ? $extra[$key] : $default;
     }
 
     /**
      * Make a comment, if verbose (cli option -v)
-     *
-     * @param  string $message
      */
-    protected function comment(string $message)
+    protected function comment(string $message): void
     {
         if ($this->io->isVerbose()) {
             $this->io->write("<comment>{$message}</comment>");
@@ -98,43 +126,22 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Handle an event
-     *
-     * @param  PackageEvent $event
+     * Determine if the package event is for the WordPress core
      */
-    public function handleEvent(PackageEvent $event)
+    protected function isWordPressCore(PackageEvent | ScriptEvent $event): bool
     {
-        if ($this->isWordPressCore($event)) {
-            $filesystem = new Filesystem;
-            $eventName = $event->getName();
+        if ($event instanceof PackageEvent) {
+            $operation = $event->getOperation();
 
-            if ($eventName === PackageEvents::POST_PACKAGE_INSTALL || $eventName === PackageEvents::POST_PACKAGE_UPDATE) {
-                (new FixIndexFile($this->wpInstallDir, $filesystem))->run();
-                $this->comment('index.php fixed');
+            if ($operation instanceof UpdateOperation) {
+                return $operation->getTargetPackage()->getType() === self::PACKAGE_TYPE;
+            }
 
-                (new RemoveGarbage($this->wpInstallDir, $filesystem))->run();
-                $this->comment('Unneeded files have been removed from the WordPress install directory');
-
-                (new EnsureDirectoriesExist($this->wpInstallDir . '/../', $filesystem))->run();
-                $this->comment('WordPress content directories exist');
-            } elseif ($eventName === PackageEvents::PRE_PACKAGE_UNINSTALL) {
-                (new RemoveIndexFile($this->wpInstallDir . '/../', $filesystem))->run();
-                $this->comment('index.php removed');
+            if ($operation instanceof UninstallOperation || $operation instanceof InstallOperation) {
+                return $operation->getPackage()->getType() === self::PACKAGE_TYPE;
             }
         }
-    }
 
-    /**
-     * Determine if the package event is for the WordPress core
-     *
-     * @param  PackageEvent $event
-     * @return boolean
-     */
-    protected function isWordPressCore(PackageEvent $event) : bool
-    {
-        $operation = $event->getOperation();
-        $package = method_exists($operation, 'getTargetPackage') ? $operation->getTargetPackage() : $operation->getPackage();
-
-        return $package->getType() === self::PACKAGE_TYPE;
+        return false;
     }
 }
