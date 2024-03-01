@@ -11,7 +11,7 @@
   </rule>
   <rule ref="rulesets/cleancode.xml/StaticAccess">
     <properties>
-      <property name="exceptions" value="\LPLabs\WordPressInstallFixer\Plugin,\org\bovigo\vfs\vfsStream"/>
+      <property name="exceptions" value="\webdeveric\WordPressInstallFixer\Plugin,\org\bovigo\vfs\vfsStream"/>
     </properties>
   </rule>
   <rule ref="rulesets/codesize.xml"/>

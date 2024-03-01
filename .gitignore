@@ -2,3 +2,4 @@
 /vendor/
 phpmd-report.xml
 .phpunit.result.cache
+.phpunit.cache/
