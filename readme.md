@@ -4,7 +4,7 @@ This Composer plugin is used to fix some things when installing WordPress in a s
 
 ## Installation
 
-`composer require lplabs/wordpress-install-fixer`
+`composer require webdeveric/wordpress-install-fixer`
 
 ## Requirements
 
