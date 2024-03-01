@@ -1,10 +1,10 @@
 <?php
 
-namespace LPLabs\WordPressInstallFixer\Tests\Tasks;
+namespace webdeveric\WordPressInstallFixer\Tests\Tasks;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use LPLabs\WordPressInstallFixer\Tasks\RemoveIndexFile;
+use webdeveric\WordPressInstallFixer\Tasks\RemoveIndexFile;
 
 class RemoveIndexFileTest extends TestCase
 {

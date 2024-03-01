@@ -1,12 +1,12 @@
 <?php
 
-namespace LPLabs\WordPressInstallFixer\Tests;
+namespace webdeveric\WordPressInstallFixer\Tests;
 
 use Composer\Config;
 use Composer\Composer;
 use Composer\IO\ConsoleIO;
 use PHPUnit\Framework\TestCase;
-use LPLabs\WordPressInstallFixer\Plugin;
+use webdeveric\WordPressInstallFixer\Plugin;
 
 class PluginTest extends TestCase
 {

@@ -2,34 +2,28 @@
 
 declare(strict_types=1);
 
-namespace LPLabs\WordPressInstallFixer\Tasks;
+namespace webdeveric\WordPressInstallFixer\Tasks;
 
 use RuntimeException;
 use Composer\Util\Filesystem;
 
 abstract class Task
 {
-    protected $directory;
-    protected $filesystem;
+    protected string $directory;
+    protected Filesystem $filesystem;
 
-    /**
-     * @param string $directory
-     * @throws RuntimeException
-     */
     public function __construct(string $directory, Filesystem $filesystem = null)
     {
         $this->directory  = $directory;
-        $this->filesystem = $filesystem ?? new Filesystem;
+        $this->filesystem = $filesystem ?? new Filesystem();
 
-        if (! file_exists($this->directory)) {
+        if (!file_exists($this->directory)) {
             throw new RuntimeException("{$directory} does not exist");
         }
     }
 
     /**
      * Perform the task
-     *
-     * @return bool
      */
-    abstract public function run() : bool;
+    abstract public function run(): bool;
 }

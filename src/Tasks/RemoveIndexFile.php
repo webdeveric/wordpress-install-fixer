@@ -2,16 +2,12 @@
 
 declare(strict_types=1);
 
-namespace LPLabs\WordPressInstallFixer\Tasks;
-
-use RuntimeException;
+namespace webdeveric\WordPressInstallFixer\Tasks;
 
 class RemoveIndexFile extends Task
 {
     /**
      * Remove the fixed index.php file
-     *
-     * @return bool
      */
     public function run() : bool
     {

@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-namespace LPLabs\WordPressInstallFixer\Tasks;
+namespace webdeveric\WordPressInstallFixer\Tasks;
 
 class EnsureDirectoriesExist extends Task
 {
     /**
      * Ensure some directories exist
-     *
-     * @return bool
      */
-    public function run() : bool
+    public function run(): bool
     {
         $path = rtrim($this->directory, DIRECTORY_SEPARATOR);
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace LPLabs\WordPressInstallFixer\Tests\Tasks;
+namespace webdeveric\WordPressInstallFixer\Tests\Tasks;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use LPLabs\WordPressInstallFixer\Tasks\RemoveGarbage;
+use webdeveric\WordPressInstallFixer\Tasks\RemoveGarbage;
 
 class RemoveGarbageTest extends TestCase
 {

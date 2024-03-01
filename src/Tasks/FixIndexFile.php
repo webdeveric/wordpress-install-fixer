@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LPLabs\WordPressInstallFixer\Tasks;
+namespace webdeveric\WordPressInstallFixer\Tasks;
 
 use RuntimeException;
 
@@ -10,13 +10,10 @@ class FixIndexFile extends Task
 {
     /**
      * Fix index.php to have the correct path to wp-blog-header.php
-     *
-     * @return bool
-     * @throws RuntimeException Unable to write index.php
      */
-    public function run() : bool
+    public function run(): bool
     {
-        $src  = $this->directory . '/index.php';
+        $src = $this->directory . '/index.php';
         $dest = dirname($this->directory) . '/index.php';
 
         if (is_file($src) && is_readable($src)) {
