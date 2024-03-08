@@ -17,6 +17,12 @@
       "role": "Developer"
     }
   ],
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/webdeveric"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "webdeveric\\WordPressInstallFixer\\": "src/"
