@@ -62,7 +62,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
             $this->comment('Unneeded files have been removed from the WordPress install directory');
 
-            (new EnsureDirectoriesExist($this->wpInstallDir . '/../', $filesystem))->run();
+            (new EnsureDirectoriesExist(realpath($this->wpInstallDir . '/../'), $filesystem))->run();
 
             $this->comment('WordPress content directories exist');
         }
@@ -70,7 +70,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function handlePackageUninstall(/* PackageEvent | ScriptEvent $event */): void
     {
-        (new RemoveIndexFile($this->wpInstallDir . '/../', new Filesystem()))->run();
+        (new RemoveIndexFile(realpath($this->wpInstallDir . '/../'), new Filesystem()))->run();
 
         $this->comment('index.php removed');
     }
