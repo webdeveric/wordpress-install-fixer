@@ -12,7 +12,7 @@
   "authors": [
     {
       "name": "Eric King",
-      "email": "eric.king@lonelyplanet.com",
+      "email": "eric@webdeveric.com",
       "homepage": "http://webdeveric.com",
       "role": "Developer"
     }
@@ -44,6 +44,7 @@
     "md": "phpmd 'src,tests' text phpmd.xml",
     "test": "XDEBUG_MODE=coverage phpunit --colors=always --coverage-text",
     "pre-commit": [
+      "php -l src/**/* tests/**/*",
       "@cs",
       "@md",
       "@test"
@@ -54,7 +55,7 @@
     ]
   },
   "require": {
-    "php": ">=8",
+    "php": ">=8.5",
     "composer-plugin-api": "^2.0"
   },
   "require-dev": {
