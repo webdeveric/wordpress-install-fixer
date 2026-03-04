@@ -11,6 +11,6 @@ class RemoveIndexFile extends Task
      */
     public function run() : bool
     {
-        return $this->filesystem->unlink($this->directory . '/index.php');
+        return $this->filesystem->remove($this->directory . '/index.php');
     }
 }
