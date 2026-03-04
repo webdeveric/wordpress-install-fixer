@@ -12,10 +12,10 @@ abstract class Task
     protected string $directory;
     protected Filesystem $filesystem;
 
-    public function __construct(string $directory, Filesystem $filesystem = null)
+    public function __construct(string $directory, Filesystem $filesystem = new Filesystem())
     {
         $this->directory  = $directory;
-        $this->filesystem = $filesystem ?? new Filesystem();
+        $this->filesystem = $filesystem;
 
         if (!file_exists($this->directory)) {
             throw new RuntimeException("{$directory} does not exist");
